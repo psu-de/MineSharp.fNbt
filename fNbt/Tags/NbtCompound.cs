@@ -376,8 +376,10 @@ namespace fNbt {
 
         internal override void WriteTag(NbtBinaryWriter writeStream) {
             writeStream.Write(NbtTagType.Compound);
-            if (Name == null) throw new NbtFormatException("Name is null");
-            writeStream.Write(Name);
+            if (Name != null) {
+                writeStream.Write(Name);
+            }
+            
             WriteData(writeStream);
         }
 

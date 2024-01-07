@@ -6,7 +6,7 @@
 		<LangVersion>7.3</LangVersion>
 		
 		<PackageId>MineSharp.fNbt</PackageId>
-		<Version>1.0.0</Version>
+		<Version>1.0.1</Version>
 		<Title>MineSharp.fNbt</Title>
 		<Authors>Erik Davidson (2010-2011); Matvei Stefarov (2012+); Paul Sütterlin (2024)</Authors>
 		<PackageLicenseUrl>https://github.com/psu-de/MineSharp.fNbt/blob/master/docs/LICENSE</PackageLicenseUrl>
