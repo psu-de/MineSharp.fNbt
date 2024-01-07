@@ -29,7 +29,6 @@ namespace fNbt {
             get { return rootTag; }
             set {
                 if (value == null) throw new ArgumentNullException(nameof(value));
-                if (value.Name == null) throw new ArgumentException("Root tag must be named.");
                 rootTag = value;
             }
         }
@@ -72,6 +71,9 @@ namespace fNbt {
         }
 
         int bufferSize;
+        
+        /// <summary> Whether this nbt file is anonymous and has no root tag name. </summary>
+        public bool Anonymous { get; set; }
 
 
         #region Constructors
@@ -352,7 +354,9 @@ namespace fNbt {
                 Selector = tagSelector
             };
 
-            var rootCompound = new NbtCompound(reader.ReadString());
+            var rootCompound = this.Anonymous 
+                ? new NbtCompound() 
+                : new NbtCompound(reader.ReadString());
             rootCompound.ReadTag(reader);
             RootTag = rootCompound;
         }
