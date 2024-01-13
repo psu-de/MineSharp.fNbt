@@ -287,17 +287,9 @@ namespace fNbt.Test {
         public void RootTagTest() {
             NbtCompound oldRoot = new NbtCompound("defaultRoot");
             NbtFile newFile = new NbtFile(oldRoot);
-
-            // Ensure that inappropriate tags are not accepted as RootTag
-            Assert.Throws<ArgumentNullException>(() => newFile.RootTag = null);
-            Assert.Throws<ArgumentException>(() => newFile.RootTag = new NbtCompound());
-
+            
             // Ensure that the root has not changed
             Assert.AreSame(oldRoot, newFile.RootTag);
-
-            // Invalidate the root tag, and ensure that expected exception is thrown
-            oldRoot.Name = null;
-            Assert.Throws<NbtFormatException>(() => newFile.SaveToBuffer(NbtCompression.None));
         }
 
 

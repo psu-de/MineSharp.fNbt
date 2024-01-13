@@ -25,7 +25,7 @@ namespace fNbt {
         /// <summary> Root tag of this file. Must be a named CompoundTag. Defaults to an empty-named tag. </summary>
         /// <exception cref="ArgumentException"> If given tag is unnamed. </exception>
         [NotNull]
-        public NbtCompound RootTag {
+        public NbtTag RootTag {
             get { return rootTag; }
             set {
                 if (value == null) throw new ArgumentNullException(nameof(value));
@@ -34,7 +34,7 @@ namespace fNbt {
         }
 
         [NotNull]
-        NbtCompound rootTag;
+        NbtTag rootTag;
 
         /// <summary> Whether new NbtFiles should default to big-endian encoding (default: true). </summary>
         public static bool BigEndianByDefault { get; set; }
@@ -347,18 +347,72 @@ namespace fNbt {
             if (firstByte < 0) {
                 throw new EndOfStreamException();
             }
-            if (firstByte != (int)NbtTagType.Compound) {
-                throw new NbtFormatException("Given NBT stream does not start with a TAG_Compound");
+            if (firstByte == (int)NbtTagType.End || firstByte > 12) {
+                throw new NbtFormatException("Given NBT stream does not start with a valid Tag.");
             }
             var reader = new NbtBinaryReader(stream, BigEndian) {
                 Selector = tagSelector
             };
 
-            var rootCompound = this.Anonymous 
-                ? new NbtCompound() 
-                : new NbtCompound(reader.ReadString());
-            rootCompound.ReadTag(reader);
-            RootTag = rootCompound;
+            var rootName = this.Anonymous ? null : reader.ReadString();
+            NbtTag rootTag;
+            NbtTagType type = (NbtTagType)firstByte;
+
+            switch (type) {
+                case NbtTagType.Byte:
+                    rootTag = new NbtByte(rootName);
+                    break;
+
+                case NbtTagType.Short:
+                    rootTag = new NbtShort(rootName);
+                    break;
+
+                case NbtTagType.Int:
+                    rootTag = new NbtInt(rootName);
+                    break;
+
+                case NbtTagType.Long:
+                    rootTag = new NbtLong(rootName);
+                    break;
+
+                case NbtTagType.Float:
+                    rootTag = new NbtFloat(rootName);
+                    break;
+
+                case NbtTagType.Double:
+                    rootTag = new NbtDouble(rootName);
+                    break;
+
+                case NbtTagType.ByteArray:
+                    rootTag = new NbtByteArray(rootName);
+                    break;
+
+                case NbtTagType.String:
+                    rootTag = new NbtString(rootName, String.Empty);
+                    break;
+
+                case NbtTagType.List:
+                    rootTag = new NbtList(rootName);
+                    break;
+
+                case NbtTagType.Compound:
+                    rootTag = new NbtCompound(rootName);
+                    break;
+
+                case NbtTagType.IntArray:
+                    rootTag = new NbtIntArray(rootName);
+                    break;
+
+                case NbtTagType.LongArray:
+                    rootTag = new NbtLongArray(rootName);
+                    break;
+
+                default:
+                    throw new NbtFormatException("Unsupported tag type for root tag: " + type);
+            }
+            
+            rootTag.ReadTag(reader);
+            RootTag = rootTag;
         }
 
         #endregion
@@ -457,12 +511,6 @@ namespace fNbt {
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(compression));
-            }
-
-            if (rootTag.Name == null) {
-                // This may trigger if root tag has been renamed
-                throw new NbtFormatException(
-                    "Cannot save NbtFile: Root tag is not named. Its name may be an empty string, but not null.");
             }
 
             long startOffset = 0;

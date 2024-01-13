@@ -605,8 +605,6 @@ namespace fNbt.Test {
             };
             Assert.Throws<NbtFormatException>(() => TryReadBadFile(badHeader));
             Assert.Throws<NbtFormatException>(
-                () => new NbtFile().LoadFromBuffer(badHeader, 0, badHeader.Length, NbtCompression.None));
-            Assert.Throws<NbtFormatException>(
                 () => NbtFile.ReadRootTagName(new MemoryStream(badHeader), NbtCompression.None, true, 0));
 
             byte[] badStringLength = {
