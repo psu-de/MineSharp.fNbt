@@ -94,9 +94,9 @@ namespace fNbt {
 
 
         /// <summary> Creates a new NBT file with the given root tag. </summary>
-        /// <param name="rootTag"> Compound tag to set as the root tag. May be <c>null</c>. </param>
+        /// <param name="rootTag"> Nbt tag to set as the root tag. May be <c>null</c>. </param>
         /// <exception cref="ArgumentException"> If given <paramref name="rootTag"/> is unnamed. </exception>
-        public NbtFile([NotNull] NbtCompound rootTag)
+        public NbtFile([NotNull] NbtTag rootTag)
             : this() {
             if (rootTag == null) throw new ArgumentNullException(nameof(rootTag));
             RootTag = rootTag;
